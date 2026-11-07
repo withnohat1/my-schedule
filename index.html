@@ -107,6 +107,9 @@
   .page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:22px}
   .date-title{font-size:30px;font-weight:700;letter-spacing:-.025em;line-height:1.16;margin:0}
   .date-title .wd{font-size:16px;font-weight:600;color:var(--ink-2);margin-left:8px;letter-spacing:0}
+  /* 周视图标题：日期独占一行，压字号 + 收字距保证再窄也不折行 */
+  .date-title.range{font-size:26px;letter-spacing:-.035em;white-space:nowrap;font-variant-numeric:tabular-nums}
+  .date-title.range .range-sep{color:var(--ink-3);font-weight:600;margin:0 2px}
   .date-sub{font-size:12.5px;color:var(--ink-2);margin-top:7px;display:flex;align-items:center;gap:6px}
   .dot-sep{width:3px;height:3px;border-radius:50%;background:var(--ink-3);display:inline-block}
   .nav{display:flex;gap:6px;flex-shrink:0;padding-bottom:3px}
@@ -878,6 +881,7 @@
     .tile-ic{width:30px;height:30px;font-size:15px;border-radius:9px}
     .date-title{font-size:26px}
     .date-title .wd{font-size:14px}
+    .date-title.range{font-size:23px}
   }
 </style>
 </head>
@@ -1623,6 +1627,7 @@ function render(){
 function paintHead(){
   const d = fromISO(state.cursor);
   const t = $('headTitle'), s = $('headSub');
+  t.className = 'date-title';          // 每次重置，周视图再单独加 range
 
   if (state.view === 'day'){
     t.innerHTML = `${d.getMonth()+1}月${d.getDate()}日<span class="wd">${WEEK_CN[d.getDay()]}</span>`;
@@ -1631,9 +1636,11 @@ function paintHead(){
   } else if (state.view === 'week'){
     const st = startOfWeek(state.cursor), en = addDays(st, 6);
     const a = fromISO(st), b = fromISO(en);
-    t.innerHTML = `${a.getMonth()+1}.${a.getDate()} — ${b.getMonth()+1}.${b.getDate()}<span class="wd">本周</span>`;
-    s.innerHTML = '';
-    s.hidden = true;   // 周视图不再显示「完成 x/63 次」汇总
+    /* 「本周」单独一行放在日期下面，日期压成一行不再折行 */
+    t.classList.add('range');
+    t.innerHTML = `${a.getMonth()+1}.${a.getDate()}<span class="range-sep">—</span>${b.getMonth()+1}.${b.getDate()}`;
+    s.innerHTML = '本周';
+    s.hidden = false;
   } else {
     const y = d.getFullYear(), m = d.getMonth();
     t.innerHTML = `${y}年 ${m+1}月`;
