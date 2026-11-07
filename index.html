@@ -15,6 +15,7 @@
     --bg:#F7F5F0;
     --bg-2:#EFEBE2;
     --surface:#FFFFFF;
+    --wm-ink:rgba(38,80,58,.42);   /* 月视图水印墨色（深绿） */
     --ink:#1F1D1A;
     --ink-2:#5E5A52;
     --ink-3:#9B958A;
@@ -54,6 +55,7 @@
       --bg:#141311;
       --bg-2:#1B1A17;
       --surface:#1F1E1A;
+      --wm-ink:rgba(134,196,162,.15);   /* 暗色下用亮绿薄薄一层 */
       --ink:#F2EFE8;
       --ink-2:#B3ADA2;
       --ink-3:#7B756B;
@@ -483,6 +485,26 @@
   }
   .mo-ov i{display:block;width:8px;height:8px;border-radius:2.5px;background:var(--mini-off);transition:background .3s}
   .mo-ov i.on{background:var(--wc)}
+
+  /* ---- 月视图水印：垫在最底层，卡片半透明透出 ---- */
+  #view-month{position:relative}
+  .mo-money,.mo-head,.mo-grid{position:relative;z-index:1}
+  #wm{
+    position:absolute;inset:0;z-index:0;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    pointer-events:none;user-select:none;overflow:hidden;
+  }
+  #wm span{
+    font-family:"Snell Roundhand","Brush Script MT",Georgia,"Times New Roman",serif;
+    font-style:italic;font-weight:700;
+    font-size:clamp(58px,17vw,118px);line-height:1.04;letter-spacing:.01em;
+    color:var(--wm-ink);text-align:center;white-space:nowrap;
+  }
+  /* 卡片与点亮色块半透明，让水印透出来 */
+  .mo-cell{background:color-mix(in srgb, var(--surface) 52%, transparent)}
+  .mo-cell.full-day{background:rgba(16,185,129,.05)}
+  .mo-mini i.on{background:color-mix(in srgb, var(--mc) 55%, transparent)}
+  .mo-ov i.on{background:color-mix(in srgb, var(--wc) 55%, transparent)}
 
   /* 每月资金：工资 / 资产 两个入口 */
   .mo-money{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px}
@@ -995,6 +1017,7 @@
 
   <!-- ============ 月视图 ============ -->
   <section id="view-month" hidden>
+    <div id="wm" aria-hidden="true"><span>No Risk</span><span>Full Push</span></div>
     <div class="mo-money">
       <button class="mo-money-card" id="moSalaryCard" type="button">
         <span class="mo-money-l">工资<em>本月收入</em></span>
