@@ -1075,7 +1075,7 @@
    ========================================================= */
 const DEFAULT_TASKS = [
   { id:'language',   name:'学习新语言', icon:'🌍', color:'#FF6B6B' },
-  { id:'english',    name:'英语加强',   icon:'🔤', color:'#F5A524' },
+  { id:'english',    name:'副业积累',   icon:'📈', color:'#F5A524' },
   { id:'guitar',     name:'练习吉他',   icon:'🎸', color:'#A855F7' },
   { id:'water',      name:'喝水',       icon:'💧', color:'#38BDF8' },
   { id:'sleep',      name:'状态',       icon:'🌙', color:'#5561E8' },
@@ -1102,7 +1102,7 @@ const WATER_GOAL     = 8;    // 一天 8 杯才算完成
 const WATER_CUP_ML   = 200;  // 每杯 200ml
 const SLEEP_GOAL_MIN = 450;  // 睡满 7.5 小时才点亮
 
-/* 这几项点击后要弹层记录，不能只做二元打卡；学习新语言 / 英语加强点一下就点亮 */
+/* 这几项点击后要弹层记录，不能只做二元打卡；学习新语言点一下就点亮 */
 const DETAIL_TASKS = { sleep:1, exercise:1 };
 
 /* 支出分类：记账时选，周报按分类看结构 */
@@ -1146,18 +1146,16 @@ const EX_ART = {
 };
 
 /* ---------------------------------------------------------
-   学习工具对接（西语练习 / 英语加强）
-   工具做好后，二选一即可让这里自动点亮：
+   学习工具对接（西语练习）
+   工具做好后，二选一即可让「学习新语言」自动点亮：
    ① 写 localStorage（同域自动同步，推荐）：
       localStorage['song.report.language.v1'] = {
         "2026-11-07": { done:true, minutes:25, items:"30 题", note:"Unit 3", at:Date.now() }
       }
-      英语加强对应 key：song.report.english.v1
    ② 直接调用：ScheduleLink.pushReport('language','2026-11-07',{minutes:25,done:true})
    --------------------------------------------------------- */
 const REPORT_LINKS = {
-  language: { label:'西语练习', key:'song.report.language.v1' },
-  english:  { label:'英语加强', key:'song.report.english.v1' }
+  language: { label:'西语练习', key:'song.report.language.v1' }
 };
 
 /* 每周固定任务（与每日任务分开管理，按"周"计完成） */
@@ -1370,7 +1368,7 @@ function isDone(date, id){
     if (sleepLog(date)) return (sleepMinOf(date) || 0) >= SLEEP_GOAL_MIN;
   } else if (id === 'exercise'){
     if (logOf(date, 'exercise')) return exerciseMinOf(date) > 0;
-  } else if (id === 'language' || id === 'english'){
+  } else if (id === 'language'){
     const r = reportOf(date, id);
     if (r && r.done) return true;   // 外部工具同步来的日报说完成就算点亮；否则照普通任务打卡
   }
@@ -1738,7 +1736,7 @@ function tileView(id, date, done){
     }
     return { meta: `<b>${m}</b> 分钟<span class="tm2">${esc(sub)}</span>` };
   }
-  if (id === 'language' || id === 'english'){
+  if (id === 'language'){
     const r = reportOf(date, id);
     if (r && (r.done || r.minutes || r.items)){
       const main = r.minutes ? `<b>${r.minutes}</b> 分钟` : (r.done ? '<b>已完成</b>' : '<b>未完成</b>');
@@ -3417,7 +3415,7 @@ document.addEventListener('keydown', e => {
   else if (!$('sheetWrap').hidden) closeSheet();
 });
 
-/* 给「西语练习 / 英语加强」用的对接接口
+/* 给「西语练习」用的对接接口
    pushReport 把数据写进工具自己的 key（唯一真身），本页不另存副本 */
 window.ScheduleLink = {
   version: 1,
@@ -3435,13 +3433,13 @@ window.ScheduleLink = {
   },
   getLog(date, id){ return logOf(date, id); },
   isDone,
-  keys: { language: REPORT_LINKS.language.key, english: REPORT_LINKS.english.key }
+  keys: { language: REPORT_LINKS.language.key }
 };
 
 /* 另一个工具在同域写入时自动刷新（重算即可，不需要同步动作） */
 window.addEventListener('storage', e => {
   if (!e.key) return;
-  if (e.key === REPORT_LINKS.language.key || e.key === REPORT_LINKS.english.key) render();
+  if (e.key === REPORT_LINKS.language.key) render();
 });
 
 /* =========================================================
