@@ -1345,7 +1345,7 @@ const sleepMinOf = date => { const l = sleepLog(date); return l && l.bed && l.wa
 /* 体重：和睡眠一起记在「状态」卡里，独立存一条，不参与睡眠达标判定 */
 const weightLog = date => logOf(date, 'weight');
 const weightOf = date => { const w = weightLog(date); return w && w.kg > 0 ? Number(w.kg) : null; };
-const fmtKg = kg => (Math.round(kg * 10) / 10).toFixed(1);
+const fmtKg = kg => (Math.round(kg * 100) / 100).toFixed(2);
 const exerciseMinOf = date => { const l = logOf(date, 'exercise'); return l ? (l.minutes || 0) : 0; };
 
 /* ---------------- 学习日报（外部工具） ----------------
@@ -3058,8 +3058,8 @@ function openSleepSheet(){
     </div>
     <div class="sh-result" id="slResult"></div>
     <label class="sh-field"><span class="sh-label">体重（kg）</span>
-      <input type="number" id="slKg" inputmode="decimal" step="0.1" min="20" max="300"
-        placeholder="${lastKg != null ? '上次 ' + fmtKg(lastKg) : '例如 62.4'}"
+      <input type="number" id="slKg" inputmode="decimal" step="0.01" min="20" max="300"
+        placeholder="${lastKg != null ? '上次 ' + fmtKg(lastKg) : '例如 62.40'}"
         value="${kg != null ? fmtKg(kg) : ''}"></label>
     <div class="sh-actions">
       <button class="ghost" data-close>取消</button>
@@ -3098,7 +3098,7 @@ function openSleepSheet(){
           kgEl.focus();
           return;
         }
-        kgVal = Math.round(n * 10) / 10;
+        kgVal = Math.round(n * 100) / 100;
       }
 
       const hasTime = !!(bedEl.value || wakeEl.value);
